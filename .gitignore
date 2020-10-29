@@ -1,3 +1,5 @@
 *.pdf
 wet.json
 *.txt
+.vscode/
+stats1.json
