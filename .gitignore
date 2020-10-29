@@ -1,5 +1,9 @@
 *.pdf
 wet.json
 *.txt
-.vscode/
 stats1.json
+
+.vscode
+
+# Local History for Visual Studio Code
+.history/
