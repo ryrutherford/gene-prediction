@@ -7,3 +7,7 @@ stats1.json
 
 # Local History for Visual Studio Code
 .history/
+
+*.gff3
+*.fa
+*.json
