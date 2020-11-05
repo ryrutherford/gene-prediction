@@ -36,7 +36,7 @@ def compare_results(df_predicted, df_official):
                 predicted_stats["end_match_only"] += 1
                 num_iters = -1
                 break
-        if(num_iters <= 0):
+        if(num_iters != -1):
             predicted_stats["no_match"] += 1
 
     #calculating stats for official gff3 in a very inefficient manner
@@ -59,19 +59,15 @@ def compare_results(df_predicted, df_official):
                 break
             #end match
             if(row_predicted["start"] != row["start"] and row_predicted["end"] == row["end"]):
-                rp = int(row_predicted["start"])
-                r = int(row["start"])
-                if(rp - r >= -1 and rp - r <= 1):
-                    print(f"Row predicted start: {rp}. Row start: {r}")
                 official_stats["end_match_only"] += 1
                 num_iters = -1
                 break
-        if(num_iters <= 0):
+        if(num_iters != -1):
             official_stats["no_match"] += 1
+
     predicted_stats = average_dict(predicted_stats)
     official_stats = average_dict(official_stats)
-    output_dict = {"predicted_stats": predicted_stats, "official_stats": official_stats}
-    print(output_dict)
+    output_dict = {"predictions/number of genes predicted": predicted_stats, "predictions/number of actual genes": official_stats}
     with open("compare_stats.json", "w") as fp:
         json.dump(output_dict, fp, indent=2)
 

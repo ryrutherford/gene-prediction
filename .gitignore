@@ -1,13 +1,5 @@
 *.pdf
-wet.json
 *.txt
-stats1.json
-
 .vscode
-
-# Local History for Visual Studio Code
 .history/
-
-*.gff3
-*.fa
-*.json
+__pycache__/

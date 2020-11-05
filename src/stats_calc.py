@@ -65,14 +65,14 @@ def get_genic_intergenic_regions(fasta_file, df):
 
         #getting the subset of the dataframe that corresponds to this section of the fasta sequence
         df_seq = df.loc[df["seqid"] == seq_record.id]
-        for index, row in df_seq.iterrows():
+        for _, row in df_seq.iterrows():
             start = int(row["start"])
             end = int(row["end"])
             genic_regions.append(seq_record.seq[start - 1 : end])
             if(position < start - 1):
                 intergenic_regions.append(seq_record.seq[position : start - 1])
             else:
-                print(f"Position: {position} was greater than or equal to start - 1: {start -1}")
+                print(f"Position: {position} was greater than or equal to start - 1: {start -1} (overlapping genes)")
             position = end
         intergenic_regions.append(seq_record.seq[position:])
     return genic_regions, intergenic_regions

@@ -1,0 +1,14 @@
+{
+  "predictions/number of genes predicted": {
+    "match": 0.5083639330885353,
+    "start_match_only": 0.0,
+    "end_match_only": 0.21950224398204815,
+    "no_match": 0.27213382292941657
+  },
+  "predictions/number of actual genes": {
+    "match": 0.6603073661897191,
+    "start_match_only": 0.0,
+    "end_match_only": 0.2851086380498145,
+    "no_match": 0.054583995760466346
+  }
+}

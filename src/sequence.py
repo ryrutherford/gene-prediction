@@ -4,19 +4,14 @@ from Bio import SeqIO
 import numpy as np
 from collections import deque
 import math
-import sys
 
-#the list of possible symbols that can be observed
-symbols = ["A", "C", "G", "T", "AAT", "GCG", "TTC", "AAA", "TTA", "GTA", "CAT", "TCT", "AAG", "ATT", "AAC", "TTT",\
-        "TTG", "TCG", "TCC", "ATC","GGT", "TGG", "GAC", "CAA", "GCC", "GTC", "ATG", "CCC", "AGT", "GGC", "GCT","GAA",\
-            "CGC","GAG","CTT","GTG","CTA", "ACC","CAG","CCA","CTG","GAT","GCA","ACG","CTC","GTT","CCT","TGT","CAC","CGT",\
-                "AGC","ACA","ACT","GGG","TAC","TAT","CCG","CGA","TCA","CGG","ATA","TAA","GGA","TGC","AGA","AGG","TGA","TAG"]
 states = ["Intergenic", "Genic Start", "Genic Middle", "Genic End"]
 intergenic_index = 0
 genic_start_index = 1
 genic_middle_index = 2
 genic_end_index = 3
 
+#since log of 0 is -infinity we define our own log of 0 to be -1milli
 def custom_log(number):
     if(number == 0):
         return -1000000
@@ -148,15 +143,13 @@ def traceback(trellis, num_nucs):
         if(column == num_nucs - 1):
             #getting the value of each of the 4 entries in column j
             values_in_col = [trellis[0][column][0], trellis[1][column][0], trellis[2][column][0], trellis[3][column][0]]
-            #print(values_in_col)
             #finding the row which has the max value in this column
             row = values_in_col.index(max(values_in_col))
             column = trellis[row][column][1][1]
         else:
-            #getting the row which gave the current entry it's value
-            #values_in_col = [trellis[0][column][0], trellis[1][column][0], trellis[2][column][0], trellis[3][column][0]]
-            #print(values_in_col)
+            #storing the previous row because it's used at the end
             prev_row = row
+            #getting the row which gave the current entry it's value
             row = val_comes_from[0]
             column = val_comes_from[1]
             if(row == None and column == None):
@@ -172,16 +165,16 @@ def traceback(trellis, num_nucs):
 
         val_comes_from = trellis[row][column][1]
 
+        #if the row is an intergenic index we add 1 intergenic state, otherwise 3 genic states
         if(row == intergenic_index):
             seq.appendleft("I")
         else:
-            #print("State is G")
             seq.appendleft("G")
             seq.appendleft("G")
             seq.appendleft("G")
     return seq
 
-
+#helper method to convert the genic_intergenic_sequence data into a gff3 file based on the info in the fasta_file
 def output_to_file(genic_intergenic_sequence, fasta_file):
     print("OUTPUTTING TO FILE")
     #cds_regions stores all the cds_regions based on the seq_record from the fasta file
@@ -225,6 +218,7 @@ def output_to_file(genic_intergenic_sequence, fasta_file):
                 stop = cds_region[1]
                 fp.write(f"{key}\tena\tCDS\t{start}\t{stop}\t.\t+\t0\t.\n")
 
+#viterbi algorithm for 4 state HMM (where 3 states output 3 symbols and 1 outputs 1 symbol)
 def viterbi(stats_dict, fasta_file):
     probabilities = create_probability_tables(stats_dict)
     sequence = []
@@ -236,7 +230,7 @@ def viterbi(stats_dict, fasta_file):
     initial_state(trellis, probabilities, sequence[0])
     compute_trellis(trellis, probabilities, sequence, num_nucs)
     genic_intergenic_sequence = traceback(trellis, num_nucs)
-    print(f"Length of genic_intergenic sequence: {len(genic_intergenic_sequence)}, Num Nucs: {num_nucs}")
+    print(f"Length of genic_intergenic sequence: {len(genic_intergenic_sequence)}, Number of nucleotides: {num_nucs}")
     output_to_file(genic_intergenic_sequence, fasta_file)
     
     
@@ -255,9 +249,6 @@ def main():
         stats = json.load(fp)
 
     viterbi(stats, fasta)
-    
 
 if __name__ == '__main__':
     main()
-
-
